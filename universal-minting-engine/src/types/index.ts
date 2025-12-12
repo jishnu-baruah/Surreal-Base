@@ -4,6 +4,9 @@
 
 import { Address } from 'viem';
 
+// Explicit re-exports for better module resolution
+export type { Address } from 'viem';
+
 // Base transaction response type
 export interface PrepareTransactionResponse {
     success: boolean;
