@@ -99,11 +99,54 @@ export function AdvancedSettings({ onOperation, isLoading, useDirectKeys }: Adva
     };
 
     const handleSubmit = (operation: string) => {
-        const data = { ...formData };
+        let data = { ...formData };
+
         if (useDirectKeys && !data.userAddress) {
             alert('Please provide user address when using direct keys');
             return;
         }
+
+        // Map collection fields to API expected format
+        if (operation === 'collection') {
+            // Validate required fields
+            if (!data.collectionName.trim()) {
+                alert('Collection name is required');
+                return;
+            }
+            if (!data.collectionSymbol.trim()) {
+                alert('Collection symbol is required');
+                return;
+            }
+
+            // Validate Ethereum address format for mintFeeRecipient if provided
+            const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
+            if (data.mintFeeRecipient && !ethAddressRegex.test(data.mintFeeRecipient)) {
+                alert('Mint fee recipient must be a valid Ethereum address');
+                return;
+            }
+
+            // Validate URL format for contractURI if provided
+            if (data.contractURI) {
+                try {
+                    new URL(data.contractURI);
+                } catch {
+                    alert('Contract URI must be a valid URL');
+                    return;
+                }
+            }
+
+            data = {
+                userAddress: data.userAddress,
+                name: data.collectionName.trim(),
+                symbol: data.collectionSymbol.trim().toUpperCase(),
+                isPublicMinting: data.isPublicMinting,
+                mintOpen: data.mintOpen,
+                // Only include optional fields if they have values
+                ...(data.mintFeeRecipient && { mintFeeRecipient: data.mintFeeRecipient }),
+                ...(data.contractURI && { contractURI: data.contractURI })
+            };
+        }
+
         onOperation(operation, data);
     };
 
@@ -438,14 +481,15 @@ export function AdvancedSettings({ onOperation, isLoading, useDirectKeys }: Adva
 
                     <div>
                         <label className={labelClassName}>
-                            Collection Symbol *
+                            Collection Symbol * <span className="text-gray-400 text-xs">(uppercase letters/numbers only)</span>
                         </label>
                         <input
                             type="text"
                             placeholder="MIC"
                             value={formData.collectionSymbol}
-                            onChange={(e) => handleInputChange('collectionSymbol', e.target.value)}
+                            onChange={(e) => handleInputChange('collectionSymbol', e.target.value.toUpperCase())}
                             className={inputClassName}
+                            maxLength={10}
                         />
                     </div>
 
@@ -473,11 +517,11 @@ export function AdvancedSettings({ onOperation, isLoading, useDirectKeys }: Adva
 
                     <div>
                         <label className={labelClassName}>
-                            Mint Fee Recipient <span className="text-gray-400 text-xs">(optional)</span>
+                            Mint Fee Recipient <span className="text-gray-400 text-xs">(optional - valid Ethereum address)</span>
                         </label>
                         <input
                             type="text"
-                            placeholder="0x..."
+                            placeholder="0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6"
                             value={formData.mintFeeRecipient}
                             onChange={(e) => handleInputChange('mintFeeRecipient', e.target.value)}
                             className={inputClassName}
