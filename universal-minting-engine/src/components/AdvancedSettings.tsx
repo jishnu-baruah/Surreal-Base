@@ -167,10 +167,11 @@ export function AdvancedSettings({ onOperation, isLoading, useDirectKeys }: Adva
                     </label>
                     <input
                         type="text"
-                        placeholder="0x..."
+                        placeholder="0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6"
                         value={formData.userAddress}
                         onChange={(e) => handleInputChange('userAddress', e.target.value)}
-                        className={inputClassName}
+                        className={`${inputClassName} font-mono text-sm`}
+                        style={{ minWidth: '100%' }}
                     />
                 </div>
             )}
@@ -527,7 +528,8 @@ export function AdvancedSettings({ onOperation, isLoading, useDirectKeys }: Adva
                             placeholder="0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6"
                             value={formData.mintFeeRecipient}
                             onChange={(e) => handleInputChange('mintFeeRecipient', e.target.value)}
-                            className={inputClassName}
+                            className={`${inputClassName} font-mono text-sm`}
+                            style={{ minWidth: '100%' }}
                         />
                     </div>
 

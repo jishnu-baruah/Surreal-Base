@@ -99,10 +99,11 @@ export function IPRegistrationForm({ onSubmit, isLoading, useDirectKeys }: IPReg
                         </label>
                         <input
                             type="text"
-                            placeholder="0x..."
+                            placeholder="0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6"
                             value={formData.userAddress}
                             onChange={(e) => handleInputChange('userAddress', e.target.value)}
-                            className={inputClassName}
+                            className={`${inputClassName} font-mono text-sm`}
+                            style={{ minWidth: '100%' }}
                             required={useDirectKeys}
                         />
                     </div>
