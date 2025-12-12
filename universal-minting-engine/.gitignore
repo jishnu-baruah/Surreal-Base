@@ -163,7 +163,6 @@ documentation/
 
 # Build artifacts
 dist/
-lib/
 es/
 
 # Cache directories
