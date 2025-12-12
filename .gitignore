@@ -1,0 +1,175 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Scripts directories (ignore all test and development scripts)
+scripts/
+*/scripts/
+typescript-tutorial/scripts/
+
+# Markdown files (ignore all except specific ones)
+*.md
+!README.md
+!API_DOCUMENTATION.md
+!grandPlan.md
+
+# Kiro IDE files (ignore all .kiro directories and files)
+.kiro/
+*/.kiro/
+
+# Temporary and generated files
+*.tmp
+*.temp
+.temp/
+temp/
+*-report.json
+test-report.json
+testnet-wallet.json
+
+# Cache directories
+.cache/
+cache/
+.next/
+.turbo/
+
+# Build outputs
+dist/
+build/
+out/
+
+# Package manager files (optional)
+# package-lock.json
+# yarn.lock
+
+# Examples and documentation (except API docs)
+examples/
+docs/
+documentation/
+!API_DOCUMENTATION.md
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Local development
+.local/
+local/
+
+# Backup files
+*.backup
+*.bak
+
+# Debug files
+debug.log
+*.debug
+
+# TypeScript
+*.tsbuildinfo
+
+# Vercel
+.vercel/
+
+# Docker
+.dockerignore
+
+# Git
+*.orig
+
+# Editor backup files
+*#
+.#*
+
+# Local configuration
+config.local.*
+*.local.json
+
+# Development utilities
+dev-utils/
+dev-tools/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+*.cert
+
+# Profiling
+*.cpuprofile
+*.heapprofile
+
+# Local history
+.history/
+
+# Emacs
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+tags
+[._]*.un~
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Atom
+.atom/
+
+# JetBrains
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# NetBeans
+nbproject/
