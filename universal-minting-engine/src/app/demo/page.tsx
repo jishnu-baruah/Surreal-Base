@@ -312,9 +312,11 @@ export default function DemoPage() {
 
         try {
             const endpoint = getEndpointForOperation(operation);
+            // Remove userAddress from data to avoid overwriting wallet address
+            const { userAddress: _, ...cleanData } = data;
             const payload = {
                 userAddress: useDirectKeys ? data.userAddress : address,
-                ...data
+                ...cleanData
             };
 
             const response = await fetch(endpoint, {
