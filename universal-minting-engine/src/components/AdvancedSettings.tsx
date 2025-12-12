@@ -135,7 +135,7 @@ export function AdvancedSettings({ onOperation, isLoading, useDirectKeys }: Adva
                 }
             }
 
-            data = {
+            const collectionData = {
                 userAddress: data.userAddress,
                 name: data.collectionName.trim(),
                 symbol: data.collectionSymbol.trim().toUpperCase(),
@@ -145,6 +145,9 @@ export function AdvancedSettings({ onOperation, isLoading, useDirectKeys }: Adva
                 ...(data.mintFeeRecipient && { mintFeeRecipient: data.mintFeeRecipient }),
                 ...(data.contractURI && { contractURI: data.contractURI })
             };
+
+            onOperation(operation, collectionData);
+            return;
         }
 
         onOperation(operation, data);
