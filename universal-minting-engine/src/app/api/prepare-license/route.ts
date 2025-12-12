@@ -91,11 +91,13 @@ async function handlePOST(request: NextRequest) {
 
         // Validate license quantity limits
         try {
-            if (requestData.amount <= 0) {
-                throw new Error('License amount must be positive');
-            }
-            if (requestData.amount > 10000) {
-                throw new Error('License amount exceeds maximum limit of 10,000');
+            if (requestData.amount !== undefined) {
+                if (requestData.amount <= 0) {
+                    throw new Error('License amount must be positive');
+                }
+                if (requestData.amount > 10000) {
+                    throw new Error('License amount exceeds maximum limit of 10,000');
+                }
             }
         } catch (error) {
             logError('/api/prepare-license', ErrorCode.VALIDATION_ERROR, error);
@@ -131,7 +133,7 @@ async function handlePOST(request: NextRequest) {
         // Note: In a real implementation, this would query the actual license terms
         // to get the minting fee and calculate the total cost
         const estimatedFeePerLicense = '1000000000000000000'; // 1 $IP token in wei (placeholder)
-        const totalEstimatedFee = (BigInt(estimatedFeePerLicense) * BigInt(requestData.amount)).toString();
+        const totalEstimatedFee = (BigInt(estimatedFeePerLicense) * BigInt(requestData.amount || 1)).toString();
 
         // Add fee information to transaction
         transactionData.value = totalEstimatedFee;

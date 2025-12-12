@@ -153,8 +153,8 @@ async function handlePOST(request: NextRequest) {
                 animation_url: fileUrl,
                 attributes: [
                     ...(autoMetadata.nftMetadata.attributes || []),
-                    { key: 'IPFS Hash', value: fileIpfsHash },
-                    { key: 'File URL', value: fileUrl }
+                    { trait_type: 'IPFS Hash', value: fileIpfsHash },
+                    { trait_type: 'File URL', value: fileUrl }
                 ]
             };
 
@@ -171,6 +171,8 @@ async function handlePOST(request: NextRequest) {
             ipMetadata = {
                 title,
                 description,
+                ipType: 'original',
+                relationships: [],
                 creators: [{
                     name: extractUserNameFromAddress(requestData.userAddress),
                     address: requestData.userAddress,
@@ -185,11 +187,12 @@ async function handlePOST(request: NextRequest) {
             nftMetadata = {
                 name: title,
                 description,
+                image: fileUrl,
                 animation_url: fileUrl,
                 attributes: [
-                    { key: 'File Name', value: requestData.filename },
-                    { key: 'Content Hash', value: contentHash },
-                    { key: 'IPFS Hash', value: fileIpfsHash }
+                    { trait_type: 'File Name', value: requestData.filename },
+                    { trait_type: 'Content Hash', value: contentHash },
+                    { trait_type: 'IPFS Hash', value: fileIpfsHash }
                 ]
             };
 
@@ -262,7 +265,7 @@ async function handlePOST(request: NextRequest) {
         try {
             storyParams = prepareRegisterIpAssetParams({
                 userAddress: requestData.userAddress,
-                ipMetadata,
+                ipMetadata: ipMetadata,
                 nftMetadata,
                 licenseTerms: requestData.licenseTerms
             }, {
