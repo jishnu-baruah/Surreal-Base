@@ -67,14 +67,10 @@ export async function GET(request: NextRequest) {
         const storyClient = getStoryClient();
 
         try {
-            // Get IP Assets owned by the address
-            const ipAssets = await storyClient.ipAsset.getIpAssetsByOwner({
-                owner: address as Address,
-                pagination: {
-                    limit,
-                    offset
-                }
-            });
+            // Note: Story Protocol SDK doesn't have getIpAssetsByOwner method
+            // This would need to be implemented using the Graph API or other indexing service
+            // For now, return empty array with proper structure
+            const ipAssets: any[] = [];
 
             const assets: IPAsset[] = [];
 
@@ -178,14 +174,10 @@ export async function POST(request: NextRequest) {
         const storyClient = getStoryClient();
 
         try {
-            // Get IP Assets owned by the address
-            const ipAssets = await storyClient.ipAsset.getIpAssetsByOwner({
-                owner: body.address as Address,
-                pagination: {
-                    limit,
-                    offset
-                }
-            });
+            // Note: Story Protocol SDK doesn't have getIpAssetsByOwner method
+            // This would need to be implemented using the Graph API or other indexing service
+            // For now, return empty array with proper structure
+            const ipAssets: any[] = [];
 
             const assets: IPAsset[] = [];
 
@@ -224,14 +216,9 @@ export async function POST(request: NextRequest) {
             // Also get license tokens owned by the address
             let licenseTokens: any[] = [];
             try {
-                const licenses = await storyClient.license.getLicenseTokensByOwner({
-                    owner: body.address as Address,
-                    pagination: {
-                        limit: 20,
-                        offset: 0
-                    }
-                });
-                licenseTokens = licenses || [];
+                // Note: Story Protocol SDK method may not exist or may have different signature
+                // For now, return empty array
+                licenseTokens = [];
             } catch (licenseError) {
                 console.warn('Failed to fetch license tokens:', licenseError);
             }

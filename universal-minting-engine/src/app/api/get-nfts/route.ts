@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
                         args: [address as Address]
                     });
 
-                    if (balance > 0n) {
+                    if (balance > BigInt(0)) {
                         // For simplicity, we'll try to get token IDs by checking sequential IDs
                         // In a production system, you'd want to use events or a more sophisticated method
                         for (let i = 0; i < Math.min(Number(balance), 10); i++) {
@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
                         args: [address as Address]
                     });
 
-                    if (balance > 0n) {
+                    if (balance > BigInt(0)) {
                         nfts.push({
                             contractAddress,
                             tokenId: 'multiple', // Placeholder since we found a balance
