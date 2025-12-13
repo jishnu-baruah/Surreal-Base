@@ -91,8 +91,9 @@ export interface PrepareTransactionRequest {
     nftMetadata: NFTMetadata;
     files?: Array<{
         filename: string;
-        content: string; // base64 encoded
-        mimeType: string;
+        data: string; // base64 encoded
+        contentType: string;
+        purpose: 'media' | 'metadata' | 'evidence' | 'attachment';
     }>;
     licenseTerms?: Partial<LicenseTermsConfig>;
 }

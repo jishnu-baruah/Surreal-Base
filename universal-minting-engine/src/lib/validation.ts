@@ -11,9 +11,18 @@ const ipfsHashSchema = z.string().regex(
     'Invalid IPFS hash format'
 );
 
-const base64Schema = z.string().regex(
-    /^[A-Za-z0-9+/]*={0,2}$/,
-    'Invalid base64 format'
+const base64Schema = z.string().refine(
+    (val) => {
+        // Handle data URLs by extracting the base64 part
+        let base64Data = val;
+        if (val.includes(',')) {
+            base64Data = val.split(',')[1];
+        }
+        
+        // Validate the base64 format
+        return /^[A-Za-z0-9+/]*={0,2}$/.test(base64Data);
+    },
+    'Invalid base64 format (data URLs are supported)'
 );
 
 // Core metadata schemas

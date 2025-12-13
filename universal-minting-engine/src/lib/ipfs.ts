@@ -235,26 +235,42 @@ export async function uploadMultipleFilesToIPFS(files: FileUpload[]): Promise<Up
         return [];
     }
 
+    console.log(`Starting upload of ${files.length} files to IPFS`);
+
     // Validate all files first
     const { valid, invalid } = validateFiles(files);
 
     if (invalid.length > 0) {
         const errorMessages = invalid.map(({ file, error }) => `${file.filename}: ${error}`);
+        console.error('File validation failed:', errorMessages);
         throw new Error(`File validation failed:\n${errorMessages.join('\n')}`);
     }
 
-    const uploadPromises = valid.map(async (file): Promise<UploadedFile> => {
+    console.log(`${valid.length} files passed validation`);
+
+    const uploadPromises = valid.map(async (file, index): Promise<UploadedFile> => {
         try {
-            // Convert base64 to buffer
+            console.log(`[${index + 1}/${valid.length}] Processing file: ${file.filename}`);
+            
+            // Convert base64 to buffer (data is already cleaned by validateFiles)
             const fileBuffer = Buffer.from(file.data, 'base64');
+            console.log(`[${index + 1}/${valid.length}] Converted to buffer: ${fileBuffer.length} bytes`);
+
+            // Use the detected content type from validation
+            const contentType = file.contentType;
+            console.log(`[${index + 1}/${valid.length}] Using content type: ${contentType}`);
 
             // Upload based on content type
             let ipfsHash: string;
-            if (file.contentType.startsWith('video/')) {
+            if (contentType.startsWith('video/')) {
+                console.log(`[${index + 1}/${valid.length}] Uploading as video...`);
                 ipfsHash = await uploadVideoToIPFS(fileBuffer, file.filename);
             } else {
-                ipfsHash = await uploadFileToIPFS(fileBuffer, file.filename, file.contentType);
+                console.log(`[${index + 1}/${valid.length}] Uploading as regular file...`);
+                ipfsHash = await uploadFileToIPFS(fileBuffer, file.filename, contentType);
             }
+
+            console.log(`[${index + 1}/${valid.length}] Successfully uploaded: ${ipfsHash}`);
 
             return {
                 filename: file.filename,
@@ -263,13 +279,15 @@ export async function uploadMultipleFilesToIPFS(files: FileUpload[]): Promise<Up
                 url: getIPFSUrl(ipfsHash)
             };
         } catch (error) {
-            console.error(`Error uploading file ${file.filename}:`, error);
+            console.error(`[${index + 1}/${valid.length}] Error uploading file ${file.filename}:`, error);
             throw new Error(`Failed to upload ${file.filename}: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     });
 
     try {
+        console.log('Starting parallel upload to IPFS...');
         const results = await Promise.all(uploadPromises);
+        console.log(`Successfully uploaded all ${results.length} files to IPFS`);
         return results;
     } catch (error) {
         console.error('Error in parallel file upload:', error);
@@ -470,32 +488,78 @@ export function validateFiles(files: FileUpload[]): { valid: FileUpload[]; inval
     const valid: FileUpload[] = [];
     const invalid: Array<{ file: FileUpload; error: string }> = [];
 
-    for (const file of files) {
+    console.log(`Validating ${files.length} files...`);
+
+    for (const [index, file] of files.entries()) {
         try {
-            const fileBuffer = Buffer.from(file.data, 'base64');
+            console.log(`[${index + 1}/${files.length}] Validating: ${file.filename}`);
+            
+            // Handle data URLs by extracting just the base64 part
+            let base64Data = file.data;
+            if (base64Data.includes(',')) {
+                console.log(`[${index + 1}/${files.length}] Detected data URL format, extracting base64...`);
+                base64Data = base64Data.split(',')[1];
+            }
+
+            // Validate base64 format
+            if (!base64Data || base64Data.length === 0) {
+                invalid.push({
+                    file,
+                    error: 'Empty or invalid base64 data'
+                });
+                continue;
+            }
+
+            // Test base64 decoding
+            let fileBuffer: Buffer;
+            try {
+                fileBuffer = Buffer.from(base64Data, 'base64');
+            } catch (decodeError) {
+                invalid.push({
+                    file,
+                    error: 'Invalid base64 encoding'
+                });
+                continue;
+            }
+
+            if (fileBuffer.length === 0) {
+                invalid.push({
+                    file,
+                    error: 'Decoded file is empty'
+                });
+                continue;
+            }
+
+            console.log(`[${index + 1}/${files.length}] Decoded to ${fileBuffer.length} bytes`);
+
             const validation = validateFile(fileBuffer, file.filename, file.contentType);
 
             if (validation.isValid) {
-                // Update the file with detected MIME type if different
+                // Update the file with cleaned base64 data and detected MIME type
                 const updatedFile = {
                     ...file,
+                    data: base64Data, // Use cleaned base64 data
                     contentType: validation.detectedMimeType || file.contentType
                 };
                 valid.push(updatedFile);
+                console.log(`[${index + 1}/${files.length}] ✅ Valid: ${file.filename}`);
             } else {
                 invalid.push({
                     file,
                     error: validation.error || 'Validation failed'
                 });
+                console.log(`[${index + 1}/${files.length}] ❌ Invalid: ${validation.error}`);
             }
         } catch (error) {
             invalid.push({
                 file,
                 error: `Failed to process file: ${error instanceof Error ? error.message : 'Unknown error'}`
             });
+            console.log(`[${index + 1}/${files.length}] ❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
 
+    console.log(`Validation complete: ${valid.length} valid, ${invalid.length} invalid`);
     return { valid, invalid };
 }
 
