@@ -70,8 +70,13 @@ async function handlePOST(request: NextRequest) {
 
         if (requestData.files && requestData.files.length > 0) {
             try {
-                // No mapping needed - validation schema and types now match
-                uploadedFiles = await uploadMultipleFilesToIPFS(requestData.files);
+                const fileUploads = requestData.files.map(file => ({
+                    data: file.content,
+                    filename: file.filename,
+                    contentType: file.mimeType,
+                    purpose: 'media' as const
+                }));
+                uploadedFiles = await uploadMultipleFilesToIPFS(fileUploads);
                 console.log(`Successfully uploaded ${uploadedFiles.length} files to IPFS`);
             } catch (error) {
                 return handleFileUploadError(error, '/api/prepare-mint');
