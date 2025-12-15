@@ -25,10 +25,14 @@ export const SECURITY_HEADERS = {
     // HSTS (only for HTTPS)
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
 
-    // Cross-Origin policies
-    'Cross-Origin-Embedder-Policy': 'require-corp',
-    'Cross-Origin-Opener-Policy': 'same-origin',
-    'Cross-Origin-Resource-Policy': 'same-origin'
+    // CORS headers for API access
+    'Access-Control-Allow-Origin': process.env.CORS_ORIGIN || '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+    'Access-Control-Max-Age': '86400',
+
+    // Cross-Origin policies (relaxed for API access)
+    'Cross-Origin-Opener-Policy': 'same-origin'
 } as const;
 
 /**
@@ -299,12 +303,29 @@ export function withSecurity<T extends any[]>(
 }
 
 /**
+ * Handle CORS preflight requests
+ */
+export function handleCORSPreflight(request: NextRequest): NextResponse | null {
+    if (request.method === 'OPTIONS') {
+        const response = new NextResponse(null, { status: 200 });
+        return addSecurityHeaders(response);
+    }
+    return null;
+}
+
+/**
  * Combined middleware that applies both rate limiting and security
  */
 export function withSecurityAndRateLimit<T extends any[]>(
     handler: (request: NextRequest, ...args: T) => Promise<NextResponse>
 ) {
     return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
+        // Handle CORS preflight requests
+        const corsResponse = handleCORSPreflight(request);
+        if (corsResponse) {
+            return corsResponse;
+        }
+
         // Import rate limiting here to avoid circular dependencies
         const { rateLimit, getRateLimitConfig, addRateLimitHeaders } = await import('./rate-limiter');
 

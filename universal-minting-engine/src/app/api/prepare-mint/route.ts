@@ -361,3 +361,8 @@ async function handleGET() {
 
 // Apply security middleware to GET endpoint
 export const GET = withSecurityAndRateLimit(handleGET);
+
+// Handle CORS preflight requests
+export const OPTIONS = withSecurityAndRateLimit(async () => {
+    return new NextResponse(null, { status: 200 });
+});

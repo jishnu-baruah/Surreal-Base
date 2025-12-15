@@ -41,6 +41,38 @@ https://your-domain.com/api
 
 The API does not require authentication for transaction preparation. However, rate limiting is applied based on client IP address.
 
+## CORS Configuration
+
+The Universal Minting Engine API is configured to support cross-origin requests from any domain by default, making it accessible from web browsers, mobile apps, and any client application.
+
+### Default CORS Settings
+- **Access-Control-Allow-Origin**: `*` (allows all domains)
+- **Access-Control-Allow-Methods**: `GET, POST, OPTIONS`
+- **Access-Control-Allow-Headers**: `Content-Type, Authorization, X-Requested-With`
+- **Access-Control-Max-Age**: `86400` (24 hours)
+
+### Custom CORS Configuration
+You can restrict CORS to specific domains by setting the `CORS_ORIGIN` environment variable:
+
+```env
+# Allow all domains (default)
+CORS_ORIGIN=*
+
+# Allow single domain
+CORS_ORIGIN=https://yourdomain.com
+
+# Allow multiple domains (comma-separated)
+CORS_ORIGIN=https://yourdomain.com,https://anotherdomain.com
+```
+
+### Browser Compatibility
+The API handles preflight OPTIONS requests automatically, ensuring compatibility with all modern browsers including:
+- Chrome/Chromium-based browsers
+- Firefox
+- Safari
+- Edge
+- Mobile browsers (iOS Safari, Chrome Mobile, etc.)
+
 ## Rate Limits
 
 Different endpoints have different rate limits:
@@ -66,6 +98,13 @@ All endpoints include comprehensive security measures:
 - `Referrer-Policy: strict-origin-when-cross-origin`
 - `Content-Security-Policy` for API responses
 - `Strict-Transport-Security` for HTTPS
+
+### CORS Support
+- `Access-Control-Allow-Origin: *` (configurable via `CORS_ORIGIN` environment variable)
+- `Access-Control-Allow-Methods: GET, POST, OPTIONS`
+- `Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With`
+- `Access-Control-Max-Age: 86400`
+- Full support for preflight OPTIONS requests
 
 ### Input Sanitization
 - SQL injection pattern detection
