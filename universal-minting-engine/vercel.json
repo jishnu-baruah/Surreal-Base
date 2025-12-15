@@ -1,0 +1,10 @@
+{
+    "framework": "nextjs",
+    "buildCommand": "npm run build",
+    "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096"
+    },
+    "github": {
+        "enabled": true
+    }
+}
